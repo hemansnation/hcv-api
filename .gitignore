@@ -1,0 +1,40 @@
+# Environment
+.env
+.env.local
+*.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+.venv/
+dist/
+build/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+htmlcov/
+.coverage
+
+# Database
+*.sqlite3
+*.db
+
+# Logs
+*.log
+logs/
+
+# VS Code
+.vscode/settings.json
+
+# Mac
+.DS_Store
+
+# Claude Code personal settings
+.claude/settings.local.json
+CLAUDE.local.md
+.claude/

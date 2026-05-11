@@ -1,0 +1,1 @@
+# SHA-256 audit hash generation
