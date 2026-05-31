@@ -1,5 +1,5 @@
-import pytest
 import asyncpg
+import pytest
 
 from api.config import settings
 from api.db.queries import create_tables

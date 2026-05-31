@@ -29,6 +29,6 @@ async def close_db_pool(app: FastAPI) -> None:
         logger.info("Database pool closed")
 
 
-def get_db_pool(request: Request) -> asyncpg.Pool:
+def get_db_pool(request: Request) -> asyncpg.Pool | None:
     """FastAPI dependency — returns the asyncpg pool from app.state."""
-    return request.app.state.db_pool
+    return getattr(request.app.state, "db_pool", None)

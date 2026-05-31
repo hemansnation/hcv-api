@@ -1,4 +1,5 @@
 """Database layer tests — connection, schema, and append-only enforcement."""
+
 import uuid
 
 import asyncpg
@@ -21,7 +22,9 @@ async def test_api_key(pool: asyncpg.Pool):
         await conn.execute("DELETE FROM api_keys WHERE id = $1", key_id)
 
 
-async def _insert_audit_row(conn: asyncpg.Connection, client_id: uuid.UUID, citation: str) -> int:
+async def _insert_audit_row(
+    conn: asyncpg.Connection, client_id: uuid.UUID, citation: str
+) -> int:
     return await conn.fetchval(
         "INSERT INTO audit_log "
         "(request_id, client_id, citation_raw, sources_checked, exists, result_json, audit_hash) "
@@ -37,6 +40,7 @@ async def _insert_audit_row(conn: asyncpg.Connection, client_id: uuid.UUID, cita
 # Connection
 # ---------------------------------------------------------------------------
 
+
 async def test_db_connection(pool: asyncpg.Pool) -> None:
     async with pool.acquire() as conn:
         result = await conn.fetchval("SELECT 1")
@@ -46,6 +50,7 @@ async def test_db_connection(pool: asyncpg.Pool) -> None:
 # ---------------------------------------------------------------------------
 # Schema
 # ---------------------------------------------------------------------------
+
 
 async def test_api_keys_table_exists(pool: asyncpg.Pool) -> None:
     async with pool.acquire() as conn:
@@ -69,18 +74,25 @@ async def test_audit_log_table_exists(pool: asyncpg.Pool) -> None:
 # Append-only enforcement
 # ---------------------------------------------------------------------------
 
-async def test_audit_log_update_blocked(pool: asyncpg.Pool, test_api_key: uuid.UUID) -> None:
+
+async def test_audit_log_update_blocked(
+    pool: asyncpg.Pool, test_api_key: uuid.UUID
+) -> None:
     """UPDATE on audit_log must silently do nothing (rule: no_update_audit)."""
     async with pool.acquire() as conn:
         audit_id = await _insert_audit_row(conn, test_api_key, "531 U.S. 98")
         await conn.execute(
             "UPDATE audit_log SET citation_raw = 'MODIFIED' WHERE id = $1", audit_id
         )
-        stored = await conn.fetchval("SELECT citation_raw FROM audit_log WHERE id = $1", audit_id)
+        stored = await conn.fetchval(
+            "SELECT citation_raw FROM audit_log WHERE id = $1", audit_id
+        )
     assert stored == "531 U.S. 98"
 
 
-async def test_audit_log_delete_blocked(pool: asyncpg.Pool, test_api_key: uuid.UUID) -> None:
+async def test_audit_log_delete_blocked(
+    pool: asyncpg.Pool, test_api_key: uuid.UUID
+) -> None:
     """DELETE on audit_log must silently do nothing (rule: no_delete_audit)."""
     async with pool.acquire() as conn:
         audit_id = await _insert_audit_row(conn, test_api_key, "576 U.S. 644")

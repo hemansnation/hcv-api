@@ -44,7 +44,11 @@ async def health_check(request: Request) -> HealthResponse:
             cache_status = "disconnected"
 
     uptime_seconds = int(time.time() - _start_time)
-    status = "healthy" if database_status == "connected" and cache_status == "connected" else "degraded"
+    status = (
+        "healthy"
+        if database_status == "connected" and cache_status == "connected"
+        else "degraded"
+    )
 
     return HealthResponse(
         status=status,
